@@ -8,17 +8,19 @@
 
 #import "ADZoomTransition.h"
 
-CGPoint CGRectCenter(CGRect rect) {
-    return CGPointMake(rect.origin.x + rect.size.width/2.0f, rect.origin.y + rect.size.height/2.0f);
-}
+
 
 @implementation ADZoomTransition
+
+CGPoint CGRectGetCenter(CGRect rect) {
+    return CGPointMake(rect.origin.x + rect.size.width/2.0f, rect.origin.y + rect.size.height/2.0f);
+}
 
 - (id)initWithSourceRect:(CGRect)sourceRect andTargetRect:(CGRect)targetRect forDuration:(double)duration {
     CABasicAnimation * zoomAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
     CATransform3D transform = CATransform3DIdentity;
-    CGPoint sourceCenter = CGRectCenter(sourceRect);
-    CGPoint targetCenter = CGRectCenter(targetRect);
+    CGPoint sourceCenter = CGRectGetCenter(sourceRect);
+    CGPoint targetCenter = CGRectGetCenter(targetRect);
     transform = CATransform3DTranslate(transform, sourceCenter.x - targetCenter.x, sourceCenter.y - targetCenter.y, 0.0f);
     transform = CATransform3DScale(transform, sourceRect.size.width/targetRect.size.width, sourceRect.size.height/targetRect.size.height, 1.0f);
     zoomAnimation.fromValue = [NSValue valueWithCATransform3D:transform];
