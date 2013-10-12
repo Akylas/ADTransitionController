@@ -160,11 +160,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 }
 
 - (void)viewWillLayoutSubviews {
-    CGFloat previousNavigationBarHeight = self.navigationBar.frame.size.height;
-    [self.navigationBar sizeToFit];
-    CGFloat navigationBarHeight = self.navigationBar.frame.size.height;
-    CGFloat heightDifference = navigationBarHeight - previousNavigationBarHeight;
-    _containerView.frame = CGRectMake(_containerView.frame.origin.x, _containerView.frame.origin.y + heightDifference, _containerView.frame.size.width, _containerView.frame.size.height - heightDifference);
+    [self updateLayout];
+    [self updateLayoutForController:self.viewControllers.lastObject];
 }
 
 #pragma mark -
@@ -173,8 +170,6 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 // Forwarding appearance messages when the container appears or disappears
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self updateLayout];
-    [self updateLayoutForController:self.viewControllers.lastObject];
     [[_viewControllers lastObject] beginAppearanceTransition:YES animated:animated];
 }
 
@@ -492,7 +487,6 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 
 - (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated {
     if (_navigationBar.hidden == hidden) return;
-    CGFloat navigationBarHeight = _navigationBar.frame.size.height;
     _navigationBar.hidden = hidden;
     if (animated) {
         [UIView beginAnimations:nil context:NULL];
@@ -636,12 +630,6 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 
 - (BOOL)isToolbarHidden {
     return _toolbar.alpha < 0.5f;
-}
-
--(void)updateLayoutForInterfaceRotation
-{
-    [self updateLayout];
-    [self updateLayoutForController:self.viewControllers.lastObject];
 }
 
 -(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
