@@ -625,5 +625,24 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     [self updateLayoutForController:self.viewControllers.lastObject];
 }
 
+#pragma mark - iOS 7 Status Bar Helpers
+-(UIViewController*)childViewControllerForStatusBarStyle{
+    return self.viewControllers.lastObject;
+}
+
+-(UIViewController*)childViewControllerForStatusBarHidden{
+    return self.viewControllers.lastObject;
+}
+
+-(void)setNeedsStatusBarAppearanceUpdateIfSupported{
+    if([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]){
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return [self.viewControllers.lastObject preferredStatusBarStyle];
+}
+
 @end
 
