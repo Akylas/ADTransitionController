@@ -321,7 +321,7 @@
 }
 - (IBAction)ghost:(id)sender {
     ALTransitionTestViewController * viewController = [[ALTransitionTestViewController alloc] initWithNibName:@"ALTransitionTestViewController" bundle:nil index:self.index+1];
-    ADTransition * animation = [[ADGhostTransition alloc] initWithDuration:_duration];
+    ADTransition * animation = [[ADGhostTransition alloc] initWithDuration:0.3];
     [self.transitionController pushViewController:viewController withTransition:animation];
     [animation release];
     [viewController release];
@@ -424,7 +424,7 @@
 
 - (IBAction)push:(id)sender {
     ALTransitionTestViewController * viewController = [[ALTransitionTestViewController alloc] initWithNibName:@"ALTransitionTestViewController" bundle:nil index:self.index+1];
-    ADTransition * animation = [[ADModernPushTransition alloc] initWithDuration:_duration orientation:_orientation sourceRect:self.view.frame];
+    ADTransition * animation = [[ADModernPushTransition alloc] initWithDuration:0.3 orientation:_orientation sourceRect:self.view.frame];
     [self.transitionController pushViewController:viewController withTransition:animation];
     [animation release];
     [viewController release];
