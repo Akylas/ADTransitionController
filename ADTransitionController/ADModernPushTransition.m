@@ -103,17 +103,25 @@
 -(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
     [super startTransitionFromView:viewOut toView:viewIn inside:viewContainer];
     CABasicAnimation* fadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    CGFloat finalValue = 0.2f;
     if (self.isReversed) {
-        fadeAnimation.fromValue = @0.2f;
+        fadeAnimation.fromValue = [NSNumber numberWithFloat:finalValue];
         fadeAnimation.toValue = @0.0f;
     }
     else {
         fadeAnimation.fromValue = @0.0f;
-        fadeAnimation.toValue = @0.2f;
+        fadeAnimation.toValue = [NSNumber numberWithFloat:finalValue];
     }
     fadeAnimation.duration = _outAnimation.duration;
+    fadeAnimation.fillMode = kCAFillModeBoth;
     
     [fadeView.layer addAnimation:fadeAnimation forKey:@"opacity"];
+    if (self.isReversed) {
+        fadeView.layer.opacity= 0.0f;
+    }
+    else {
+        fadeView.layer.opacity= finalValue;
+    }
 }
 
 @end
