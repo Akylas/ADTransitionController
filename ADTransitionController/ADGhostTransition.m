@@ -11,10 +11,8 @@
 @implementation ADGhostTransition
 
 - (id)initWithDuration:(CFTimeInterval)duration {    
-    CABasicAnimation * inFadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    inFadeAnimation.fromValue = @0.0f;
-    inFadeAnimation.toValue = @1.0f;
-    inFadeAnimation.duration = duration/2;
+    CAKeyframeAnimation * inFadeAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+    inFadeAnimation.values = @[@0.0f, @1.0f, @1.0f];
     
     CABasicAnimation * inScaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
     inScaleAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0f, 2.0f, 2.0f)];
@@ -31,10 +29,8 @@
     outPositionAnimation.toValue = @-0.001;
     outPositionAnimation.duration = duration;
     
-    CABasicAnimation * outFadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    outFadeAnimation.fromValue = @1.0f;
-    outFadeAnimation.toValue = @0.0f;
-    outFadeAnimation.duration = duration/2;
+    CAKeyframeAnimation * outFadeAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+    outFadeAnimation.values = @[@1.0f, @0.0f, @0.0f];
     
     CABasicAnimation * outScaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
     outScaleAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
