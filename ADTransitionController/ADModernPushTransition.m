@@ -11,7 +11,6 @@
 
 @interface ADModernPushTransition()
 {
-    CABasicAnimation * fadeAnimation;
     UIView* fadeView;
 }
 @end
@@ -62,26 +61,16 @@
     }
     inSwipeAnimation.duration = duration;
 
-    CABasicAnimation * outOpacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    outOpacityAnimation.fromValue = @1.0f;
-    outOpacityAnimation.toValue = @0.5f;
-
     CABasicAnimation * outPositionAnimation = [CABasicAnimation animationWithKeyPath:@"zPosition"];
     outPositionAnimation.fromValue = @-0.001;
     outPositionAnimation.toValue = @-0.001;
     outPositionAnimation.duration = duration;
 
     CAAnimationGroup * outAnimation = [CAAnimationGroup animation];
-    [outAnimation setAnimations:@[outOpacityAnimation, outPositionAnimation]];
+    [outAnimation setAnimations:@[outPositionAnimation]];
     outAnimation.duration = duration;
     
-    fadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    fadeAnimation.fromValue = @0.0f;
-    fadeAnimation.toValue = @0.2f;
-    fadeAnimation.duration = duration;
     
-    fadeView = [[UIView alloc] initWithFrame:CGRectZero];
-    fadeView.backgroundColor = [UIColor blackColor];
 
     self = [super initWithInAnimation:inSwipeAnimation andOutAnimation:outAnimation];
     return self;
@@ -91,8 +80,18 @@
 -(void)prepareTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer
 {
     [super prepareTransitionFromView:viewOut toView:viewIn inside:viewContainer];
-    fadeView.frame = viewOut.bounds;
-    [viewOut addSubview:fadeView];
+    if (fadeView == nil) {
+        fadeView = [[UIView alloc] initWithFrame:CGRectZero];
+        fadeView.backgroundColor = [UIColor blackColor];
+    }
+    if (self.isReversed) {
+        fadeView.frame = viewIn.bounds;
+        [viewIn addSubview:fadeView];
+    }
+    else {
+        fadeView.frame = viewOut.bounds;
+        [viewOut addSubview:fadeView];
+    }
 }
 
 -(void)finishedTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer
@@ -103,6 +102,17 @@
 
 -(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
     [super startTransitionFromView:viewOut toView:viewIn inside:viewContainer];
+    CABasicAnimation* fadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    if (self.isReversed) {
+        fadeAnimation.fromValue = @0.2f;
+        fadeAnimation.toValue = @0.0f;
+    }
+    else {
+        fadeAnimation.fromValue = @0.0f;
+        fadeAnimation.toValue = @0.2f;
+    }
+    fadeAnimation.duration = _outAnimation.duration;
+    
     [fadeView.layer addAnimation:fadeAnimation forKey:@"opacity"];
 }
 

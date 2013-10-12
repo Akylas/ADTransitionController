@@ -42,8 +42,9 @@
 - (ADTransition *)reverseTransition {
     CAAnimation * inAnimationCopy = [self.inAnimation copy];
     CAAnimation * outAnimationCopy = [self.outAnimation copy];
-    ADDualTransition * reversedTransition = [[ADDualTransition alloc] initWithInAnimation:outAnimationCopy // Swapped
+    ADDualTransition * reversedTransition = [[[self class] alloc] initWithInAnimation:outAnimationCopy // Swapped
                                                                           andOutAnimation:inAnimationCopy];
+    reversedTransition.isReversed = YES;
     reversedTransition.delegate = self.delegate; // Pointer assignment
     reversedTransition.inAnimation.speed = -1.0 * reversedTransition.inAnimation.speed;
     reversedTransition.outAnimation.speed = -1.0 * reversedTransition.outAnimation.speed;

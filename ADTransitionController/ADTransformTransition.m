@@ -45,7 +45,8 @@
 }
 
 - (ADTransition *)reverseTransition {
-    ADTransformTransition * reversedTransition = [[ADTransformTransition alloc] initWithAnimation:_animation inLayerTransform:_outLayerTransform outLayerTransform:_inLayerTransform];;
+    ADTransformTransition * reversedTransition = [[[self class] alloc] initWithAnimation:_animation inLayerTransform:_outLayerTransform outLayerTransform:_inLayerTransform];;
+    reversedTransition.isReversed = YES;
     reversedTransition.delegate = self.delegate; // Pointer assignment
     reversedTransition.animation.speed = - 1.0 * reversedTransition.animation.speed;
     return [reversedTransition autorelease];

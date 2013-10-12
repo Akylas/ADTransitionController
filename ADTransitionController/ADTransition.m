@@ -18,6 +18,13 @@ NSString * ADTransitionAnimationOutValue = @"ADTransitionAnimationOutValue";
 @synthesize delegate = _delegate;
 @synthesize type = _type;
 
+- (id)init {
+    if (self = [super init]) {
+        self.isReversed = NO;
+    }
+    return self;
+}
+
 + (ADTransition *)nullTransition {
     return [[[ADTransition alloc] init] autorelease];
 }
