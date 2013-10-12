@@ -89,11 +89,9 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 }
 
 - (void)loadView {
-    UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.0f, 100.0f)];
-    view.autoresizesSubviews = YES;
-    view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    self.view = view;
-    [view release];
+    [super loadView];
+    self.view.autoresizesSubviews = YES;
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
     // Setting the perspective
     float zDistance = AD_Z_DISTANCE;
@@ -159,6 +157,14 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     } else {
         return topViewController;
     }
+}
+
+- (void)viewWillLayoutSubviews {
+    CGFloat previousNavigationBarHeight = self.navigationBar.frame.size.height;
+    [self.navigationBar sizeToFit];
+    CGFloat navigationBarHeight = self.navigationBar.frame.size.height;
+    CGFloat heightDifference = navigationBarHeight - previousNavigationBarHeight;
+    _containerView.frame = CGRectMake(_containerView.frame.origin.x, _containerView.frame.origin.y + heightDifference, _containerView.frame.size.width, _containerView.frame.size.height - heightDifference);
 }
 
 #pragma mark -
@@ -348,7 +354,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     BOOL animated = transition ? YES : NO;
     [_transitions removeLastObject];
     
-    UIViewController * inViewController = [_viewControllers objectAtIndex:([_viewControllers count] - 2)];
+    UIViewController * inViewController = _viewControllers[([_viewControllers count] - 2)];
     [inViewController beginAppearanceTransition:YES animated:animated];
     if ([self.delegate respondsToSelector:@selector(transitionController:willShowViewController:animated:)]) {
         [self.delegate transitionController:self willShowViewController:inViewController animated:animated];
@@ -449,7 +455,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 - (void)pushTransitionDidFinish:(ADTransition *)transition {
     BOOL animated = transition ? YES : NO;
     if ([_viewControllers count] >= 2) {
-        UIViewController * outViewController = [_viewControllers objectAtIndex:([_viewControllers count] - 2)];
+        UIViewController * outViewController = _viewControllers[([_viewControllers count] - 2)];
         [outViewController.view removeFromSuperview];
         [outViewController endAppearanceTransition];
     }
