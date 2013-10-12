@@ -37,6 +37,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     BOOL _shoudPopItem;
     BOOL _ios7OrGreater;
     CGFloat _statusBarDecale;
+    CGFloat _realStatusBarDecale;
 }
 @end
 
@@ -83,6 +84,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     CGSize toolbarSize = self.toolbar.frame.size;
     self.toolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
     [self.navigationBar sizeToFit];
+    CGRect frame  =self.navigationBar.frame;
+    frame.size = frame.size;
 }
 
 - (void)loadView {
@@ -108,7 +111,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     // Create and add navigation bar to the view
     id vcbasedStatHidden = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"];
 
-    _statusBarDecale = (_ios7OrGreater && (!vcbasedStatHidden || [vcbasedStatHidden boolValue]))?20:0;
+    _realStatusBarDecale = _statusBarDecale = (_ios7OrGreater && (!vcbasedStatHidden || [vcbasedStatHidden boolValue]))?20:0;
     _navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, _statusBarDecale, 0, 0)];
     _navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     _navigationBar.delegate = self;
@@ -190,16 +193,17 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 }
 
 
--(void)adjustScrollViewInsetsForView:(UIView*)inView topCrop:(BOOL)topCrop bottomCrop:(BOOL)bottomCrop
+-(void)adjustScrollViewInsetsForView:(UIView*)inView topCrop:(BOOL)topCrop bottomCrop:(BOOL)bottomCrop topView:(UIView*)topView
 {
     CGFloat navigationBarHeight = _navigationBar.hidden?0:_navigationBar.frame.size.height;
     CGFloat toolbarHeight = _toolbar.hidden?0:_toolbar.frame.size.height;
+    CGRect containerFrame = _containerView.bounds;
     for (UIView* view in inView.subviews) {
         if ([view isKindOfClass:[UIScrollView class]])
         {
             UIScrollView* scrollview = (UIScrollView*)view;
             CGRect originalFrame = scrollview.frame;
-            CGRect scrollviewRect = [scrollview convertRect:originalFrame toView:_containerView];
+            CGRect scrollviewRect = [scrollview convertRect:originalFrame toView:topView];
             UIEdgeInsets oldInset = scrollview.contentInset;
             CGPoint oldOffset = scrollview.contentOffset;
             scrollviewRect.origin.y += oldOffset.y;
@@ -207,7 +211,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
             UIEdgeInsets inset = UIEdgeInsetsMake(0, 0, 0, 0);
             if (!topCrop && navigationBarHeight > 0 && scrollviewRect.origin.y <= navigationBarHeight)
             {
-                inset.top = navigationBarHeight + _statusBarDecale - scrollviewRect.origin.y;
+                inset.top = navigationBarHeight + _realStatusBarDecale - scrollviewRect.origin.y;
             }
             if (!bottomCrop && toolbarHeight > 0)
             {
@@ -221,7 +225,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
                 scrollview.contentOffset = CGPointMake(0,-inset.top);
             }
         }
-        [self adjustScrollViewInsetsForView:view topCrop:topCrop bottomCrop:bottomCrop];
+        [self adjustScrollViewInsetsForView:view topCrop:topCrop bottomCrop:bottomCrop topView:topView];
     }
 }
 
@@ -250,8 +254,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     CGFloat navigationBarHeight = _navigationBar.frame.size.height;
     CGFloat toolbarHeight = _toolbar.frame.size.height;
     if (topCrop) {
-        frame.origin.y = navigationBarHeight;
-        frame.size.height -= navigationBarHeight;
+        frame.origin.y = navigationBarHeight + _realStatusBarDecale;
+        frame.size.height -= navigationBarHeight + _realStatusBarDecale;
     }
     if (bottomCrop) {
         frame.size.height -= toolbarHeight;
@@ -260,7 +264,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     _containerView.frame = frame;
     ((UIViewController*)controller).view.frame = _containerView.bounds;
    if (adjustScrollViewInsets) {
-        [self adjustScrollViewInsetsForView:((UIViewController*)controller).view topCrop:topCrop bottomCrop:bottomCrop];
+       UIView* inView = ((UIViewController*)controller).view;
+       [self adjustScrollViewInsetsForView:inView topCrop:topCrop bottomCrop:bottomCrop topView:inView];
     }
     _toolbar.items = ((UIViewController*)controller).toolbarItems;
 }
@@ -525,7 +530,22 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 {
     if ([bar isKindOfClass:[UIToolbar class]])
         return UIBarPositionBottom;
-    return UIBarPositionTopAttached;
+    else  {
+        UIBarPosition position;
+        CGPoint framOrigin = [self.view convertPoint:self.view.frame.origin toView:nil];
+        if (framOrigin.y >= _statusBarDecale) {
+            _realStatusBarDecale = 0;
+            position = UIBarPositionTop;
+        }
+        else {
+            _realStatusBarDecale = _statusBarDecale;
+            position = UIBarPositionTopAttached;
+        }
+        CGRect frame  =self.navigationBar.frame;
+        frame.origin = CGPointMake(0, _realStatusBarDecale);
+        self.navigationBar.frame = frame;
+        return position;
+    }
 }
 
 @end
