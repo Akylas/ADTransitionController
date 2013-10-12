@@ -51,4 +51,16 @@
     return [reversedTransition autorelease];
 }
 
+-(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
+    viewIn.layer.transform = self.inLayerTransform;
+    viewOut.layer.transform = self.outLayerTransform;
+    
+    // We now balance viewIn.layer.transform by taking its invert and putting it in the superlayer of viewIn.layer
+    // so that viewIn.layer appears ok in the final state.
+    // (When pushing, viewIn.layer.transform == CATransform3DIdentity)
+    viewContainer.layer.transform = CATransform3DInvert(viewIn.layer.transform);
+    
+    [viewContainer.layer addAnimation:self.animation forKey:nil];
+}
+
 @end

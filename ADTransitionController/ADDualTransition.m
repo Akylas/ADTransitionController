@@ -52,6 +52,11 @@
     return [reversedTransition autorelease];
 }
 
+-(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
+    [viewIn.layer addAnimation:self.inAnimation forKey:nil];
+    [viewOut.layer addAnimation:self.outAnimation forKey:nil];
+}
+
 #pragma mark -
 #pragma mark CAAnimationDelegate
 - (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)flag {
