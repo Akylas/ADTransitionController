@@ -221,6 +221,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
                 scrollview.contentInset = scrollview.scrollIndicatorInsets = inset;
                 scrollview.contentOffset = CGPointMake(0,-inset.top);
             }
+            continue;
         }
         [self adjustScrollViewInsetsForView:view topCrop:topCrop bottomCrop:bottomCrop topView:topView];
     }
