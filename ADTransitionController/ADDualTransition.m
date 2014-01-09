@@ -16,12 +16,14 @@
     if (self = [self init]) {
         _inAnimation = [inAnimation retain];
         _outAnimation = [outAnimation retain];
+        _duration = _inAnimation.duration;
         [self finishInit];
     }
     return self;
 }
 
 - (id)initWithDuration:(CFTimeInterval)duration {
+    _duration = duration;
     return nil;
 }
 
@@ -37,13 +39,15 @@
     [_inAnimation setValue:ADTransitionAnimationInValue forKey:ADTransitionAnimationKey]; // See 'Core Animation Extensions To Key-Value Coding' : "while the key “someKey” is not a declared property of the CALayer class, however you can still set a value for the key “someKey” "
     _outAnimation.delegate = self;
     [_outAnimation setValue:ADTransitionAnimationOutValue forKey:ADTransitionAnimationKey];
+    _inAnimation.fillMode = _outAnimation.fillMode = kCAFillModeForwards;
+    _inAnimation.removedOnCompletion = _outAnimation.removedOnCompletion = NO;
 }
 
 - (ADTransition *)reverseTransition {
     CAAnimation * inAnimationCopy = [self.inAnimation copy];
     CAAnimation * outAnimationCopy = [self.outAnimation copy];
     ADDualTransition * reversedTransition = [[[self class] alloc] initWithInAnimation:outAnimationCopy // Swapped
-                                                                          andOutAnimation:inAnimationCopy];
+                                                                      andOutAnimation:inAnimationCopy];
     reversedTransition.isReversed = YES;
     reversedTransition.delegate = self.delegate; // Pointer assignment
     reversedTransition.inAnimation.speed = -1.0 * reversedTransition.inAnimation.speed;
@@ -53,9 +57,14 @@
     return [reversedTransition autorelease];
 }
 
+-(void)prepareTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
+    [super prepareTransitionFromView:viewOut toView:viewIn inside:viewContainer];
+}
+
 -(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
-    [viewIn.layer addAnimation:self.inAnimation forKey:nil];
-    [viewOut.layer addAnimation:self.outAnimation forKey:nil];
+    [super startTransitionFromView:viewOut toView:viewIn inside:viewContainer];
+    [viewIn.layer addAnimation:self.inAnimation forKey:kAdKey];
+    [viewOut.layer addAnimation:self.outAnimation forKey:kAdKey];
 }
 
 #pragma mark -
