@@ -43,6 +43,7 @@
             break;
     }
     inSwipeAnimation.duration = duration;
+    outSwipeAnimation.duration = duration;
 
     CABasicAnimation * inPositionAnimation = [CABasicAnimation animationWithKeyPath:@"zPosition"];
     inPositionAnimation.fromValue = @-0.001;
