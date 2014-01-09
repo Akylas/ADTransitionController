@@ -32,7 +32,7 @@
     const CGFloat viewHeight = sourceRect.size.height;
 
     CABasicAnimation * inSwipeAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-    inSwipeAnimation.timingFunction = [CAMediaTimingFunction easeInOutCirc];
+    inSwipeAnimation.timingFunction = [CAMediaTimingFunction easeOutExpo];
     inSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
     switch (orientation) {
         case ADTransitionRightToLeft:
@@ -76,6 +76,12 @@
     return self;
 }
 
+- (ADTransition *)reverseTransition {
+    ADDualTransition *reverse = (ADDualTransition*)[super reverseTransition];
+    reverse.outAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAAnimationLinear];
+    reverse.outAnimation.duration = reverse.outAnimation.duration/2;
+    return reverse;
+}
 
 -(void)prepareTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer
 {
@@ -85,10 +91,13 @@
         fadeView.backgroundColor = [UIColor blackColor];
     }
     if (self.isReversed) {
-        fadeView.frame = viewIn.bounds;
-        [viewIn addSubview:fadeView];
+        if (viewIn) {
+            fadeView.frame = viewIn.bounds;
+            [viewIn addSubview:fadeView];
+        }
+        
     }
-    else {
+    else if (viewOut){
         fadeView.frame = viewOut.bounds;
         [viewOut addSubview:fadeView];
     }
