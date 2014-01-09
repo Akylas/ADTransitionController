@@ -17,25 +17,31 @@
     
     CABasicAnimation * inSwipeAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
     inSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+    CABasicAnimation * outSwipeAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    outSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
     switch (orientation) {
         case ADTransitionRightToLeft:
         {
             inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(viewWidth, 0.0f, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(-viewWidth*kSwipeFadeTranslate, 0.0f, 0.0f)];
         }
             break;
         case ADTransitionLeftToRight:
         {
             inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(- viewWidth, 0.0f, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation( viewWidth*kSwipeFadeTranslate, 0.0f, 0.0f)];
         }
             break;
         case ADTransitionTopToBottom:
         {
             inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, - viewHeight, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, viewHeight*kSwipeFadeTranslate, 0.0f)];
         }
             break;
         case ADTransitionBottomToTop:
         {
             inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, viewHeight, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, - viewHeight*kSwipeFadeTranslate, 0.0f)];
         }
             break;
         default:
@@ -65,7 +71,7 @@
     outPositionAnimation.duration = duration;
     
     CAAnimationGroup * outAnimation = [CAAnimationGroup animation];
-    [outAnimation setAnimations:@[outOpacityAnimation, outPositionAnimation]];
+    [outAnimation setAnimations:@[outOpacityAnimation, outPositionAnimation, outSwipeAnimation]];
     outAnimation.duration = duration;
     
     self = [super initWithInAnimation:inAnimation andOutAnimation:outAnimation];
