@@ -620,8 +620,19 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
 -(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.viewControllers.lastObject willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self updateLayout];
     [self updateLayoutForController:self.viewControllers.lastObject];
+}
+
+-(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.viewControllers.lastObject willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self.viewControllers.lastObject didRotateFromInterfaceOrientation:fromInterfaceOrientation ];
 }
 
 #pragma mark - iOS 7 Status Bar Helpers
