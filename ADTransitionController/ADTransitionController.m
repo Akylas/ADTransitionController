@@ -300,6 +300,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     
     UIView * viewIn = viewController.view;
     
+    //better to do it now. Otherwise in addChildViewController we wont use the correct frame size
+    [self updateLayoutForController:viewController];
     
     [self addChildViewController:viewController];
     [viewController beginAppearanceTransition:YES animated:animated];
@@ -310,7 +312,6 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     if ([self.delegate respondsToSelector:@selector(transitionController:willShowViewController:animated:)]) {
         [self.delegate transitionController:self willShowViewController:viewController animated:animated];
     }
-    [self updateLayoutForController:viewController];
     
     [_containerView addSubview:viewIn];
     
