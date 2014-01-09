@@ -353,11 +353,12 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     [_transitions removeLastObject];
     
     UIViewController * inViewController = _viewControllers[([_viewControllers count] - 2)];
+    inViewController.view.frame = _containerView.bounds;
+    
     [inViewController beginAppearanceTransition:YES animated:animated];
     if ([self.delegate respondsToSelector:@selector(transitionController:willShowViewController:animated:)]) {
         [self.delegate transitionController:self willShowViewController:inViewController animated:animated];
     }
-    inViewController.view.frame = _containerView.bounds;
     [_containerView addSubview:inViewController.view];
     
     UIViewController * outViewController = [_viewControllers lastObject];
