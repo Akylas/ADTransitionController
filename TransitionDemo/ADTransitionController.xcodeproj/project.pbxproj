@@ -70,7 +70,9 @@
 		49F4C38D1757987E0083DE48 /* ALSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49F4C38B1757987C0083DE48 /* ALSettingsViewController.m */; };
 		49F4C390175798A50083DE48 /* ALSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49F4C38F175798A50083DE48 /* ALSettingsViewController.xib */; };
 		6FB67DBB18055F81009F27B1 /* ADModernPushTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DBA18055F81009F27B1 /* ADModernPushTransition.m */; };
-		D56E901118097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.m in Sources */ = {isa = PBXBuildFile; fileRef = D56E901018097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.m */; };
+		6FB67DBE18058562009F27B1 /* ADTransitioningDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DBD18058562009F27B1 /* ADTransitioningDelegate.m */; };
+		6FB67DC118059126009F27B1 /* ADNavigationControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DC018059126009F27B1 /* ADNavigationControllerDelegate.m */; };
+		6FB67DC41806B3FF009F27B1 /* ADTransitioningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DC31806B3FF009F27B1 /* ADTransitioningViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -166,8 +168,12 @@
 		49F4C38F175798A50083DE48 /* ALSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ALSettingsViewController.xib; sourceTree = "<group>"; };
 		6FB67DB918055F81009F27B1 /* ADModernPushTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADModernPushTransition.h; sourceTree = "<group>"; };
 		6FB67DBA18055F81009F27B1 /* ADModernPushTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADModernPushTransition.m; sourceTree = "<group>"; };
-		D56E900F18097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CAMediaTimingFunction+AdditionalEquations.h"; sourceTree = "<group>"; };
-		D56E901018097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CAMediaTimingFunction+AdditionalEquations.m"; sourceTree = "<group>"; };
+		6FB67DBC18058562009F27B1 /* ADTransitioningDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADTransitioningDelegate.h; sourceTree = "<group>"; };
+		6FB67DBD18058562009F27B1 /* ADTransitioningDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADTransitioningDelegate.m; sourceTree = "<group>"; };
+		6FB67DBF18059126009F27B1 /* ADNavigationControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNavigationControllerDelegate.h; sourceTree = "<group>"; };
+		6FB67DC018059126009F27B1 /* ADNavigationControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNavigationControllerDelegate.m; sourceTree = "<group>"; };
+		6FB67DC21806B3FF009F27B1 /* ADTransitioningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADTransitioningViewController.h; sourceTree = "<group>"; };
+		6FB67DC31806B3FF009F27B1 /* ADTransitioningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADTransitioningViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,8 +194,6 @@
 		490A85E3175DED910085D3D8 /* ADTransitionController */ = {
 			isa = PBXGroup;
 			children = (
-				D56E900F18097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.h */,
-				D56E901018097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.m */,
 				490A8608175DED910085D3D8 /* ADTransitionController.h */,
 				490A8609175DED910085D3D8 /* ADTransitionController.m */,
 				490A8606175DED910085D3D8 /* ADTransition.h */,
@@ -201,6 +205,12 @@
 				490A860C175DED910085D3D8 /* UIViewController+ADTransitionController.h */,
 				490A860D175DED910085D3D8 /* UIViewController+ADTransitionController.m */,
 				490A8623175DEDD80085D3D8 /* Templates */,
+				6FB67DBC18058562009F27B1 /* ADTransitioningDelegate.h */,
+				6FB67DBD18058562009F27B1 /* ADTransitioningDelegate.m */,
+				6FB67DBF18059126009F27B1 /* ADNavigationControllerDelegate.h */,
+				6FB67DC018059126009F27B1 /* ADNavigationControllerDelegate.m */,
+				6FB67DC21806B3FF009F27B1 /* ADTransitioningViewController.h */,
+				6FB67DC31806B3FF009F27B1 /* ADTransitioningViewController.m */,
 			);
 			name = ADTransitionController;
 			path = ../ADTransitionController;
@@ -484,9 +494,10 @@
 				490A8615175DED910085D3D8 /* ADFoldTransition.m in Sources */,
 				490A8616175DED910085D3D8 /* ADGhostTransition.m in Sources */,
 				490A8617175DED910085D3D8 /* ADGlueTransition.m in Sources */,
+				6FB67DC118059126009F27B1 /* ADNavigationControllerDelegate.m in Sources */,
 				490A8618175DED910085D3D8 /* ADPushRotateTransition.m in Sources */,
 				6FB67DBB18055F81009F27B1 /* ADModernPushTransition.m in Sources */,
-				D56E901118097F3A0081010A /* CAMediaTimingFunction+AdditionalEquations.m in Sources */,
+				6FB67DBE18058562009F27B1 /* ADTransitioningDelegate.m in Sources */,
 				490A8619175DED910085D3D8 /* ADScaleTransition.m in Sources */,
 				490A861A175DED910085D3D8 /* ADSlideTransition.m in Sources */,
 				490A861B175DED910085D3D8 /* ADSwapTransition.m in Sources */,
@@ -497,6 +508,7 @@
 				490A8620175DED910085D3D8 /* ADTransitionController.m in Sources */,
 				490A8621175DED910085D3D8 /* ADZoomTransition.m in Sources */,
 				490A8622175DED910085D3D8 /* UIViewController+ADTransitionController.m in Sources */,
+				6FB67DC41806B3FF009F27B1 /* ADTransitioningViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,7 +539,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -550,7 +562,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -563,7 +575,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ADTransitionController-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/ADTransitionController-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -575,7 +587,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ADTransitionController-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/ADTransitionController-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

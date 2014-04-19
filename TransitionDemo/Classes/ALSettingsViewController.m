@@ -13,6 +13,7 @@
     CGFloat _speed;
     ADTransitionOrientation _orientation;
     BOOL _navigationBarHidden;
+    BOOL _toolbarHidden;
 }
 @end
 
@@ -25,6 +26,7 @@
         _speed = [[defaults objectForKey:AL_SPEED_KEY] floatValue];
         _orientation = [[defaults objectForKey:AL_ORIENTATION_KEY] intValue];
         _navigationBarHidden = [[defaults objectForKey:AL_NAVIGATION_BAR_HIDDEN_KEY] boolValue];
+        _toolbarHidden = [[defaults objectForKey:AL_TOOLBAR_HIDDEN_KEY] boolValue];
         self.title = @"Settings";
     }
     return self;
@@ -34,9 +36,10 @@
     [_tableView release];
     [_speedLabel release];
     [_slider release];
-    [_switchView release];
+    [_navigationBarSwitch release];
     [_scrollView release];
     [_creditView release];
+    [_toolbarSwitch release];
     [super dealloc];
 }
 
@@ -44,9 +47,10 @@
     [self setTableView:nil];
     [self setSpeedLabel:nil];
     [self setSlider:nil];
-    [self setSwitchView:nil];
+    [self setNavigationBarSwitch:nil];
     [self setScrollView:nil];
     [self setCreditView:nil];
+    [self setToolbarSwitch:nil];
     [super viewDidUnload];
 }
 
@@ -54,7 +58,8 @@
     [super viewDidLoad];
     self.slider.value = _speed;
     self.speedLabel.text = [NSString stringWithFormat:@"%.2fs", self.slider.value];
-    self.switchView.on = !_navigationBarHidden;
+    self.navigationBarSwitch.on = !_navigationBarHidden;
+    self.toolbarSwitch.on = !_toolbarHidden;
     self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, CGRectGetMaxY(self.creditView.frame) + 20.0f);
     
     UIBarButtonItem * doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
@@ -86,6 +91,10 @@
     _navigationBarHidden = !sender.on;
 }
 
+- (IBAction)toggleToolbar:(UISwitch *)sender {
+    _toolbarHidden = !sender.on;
+}
+
 - (IBAction)updateSpeed:(UISlider *)sender {
     _speed = sender.value;
     self.speedLabel.text = [NSString stringWithFormat:@"%.2fs", _speed];
@@ -96,13 +105,10 @@
     [defaults setValue:@(_speed) forKey:AL_SPEED_KEY];
     [defaults setValue:@(_orientation) forKey:AL_ORIENTATION_KEY];
     [defaults setValue:@(_navigationBarHidden) forKey:AL_NAVIGATION_BAR_HIDDEN_KEY];
+    [defaults setValue:@(_toolbarHidden) forKey:AL_TOOLBAR_HIDDEN_KEY];
     [defaults synchronize];
     [self.delegate settingsViewControllerDidUpdateSettings:self];
-    if ([self respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - 

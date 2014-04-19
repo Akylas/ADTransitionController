@@ -22,8 +22,8 @@
 
 NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssociationKey";
 
-#define AD_NAVIGATION_BAR_HEIGHT_PORTRAIT 44.0f
-#define AD_TOOLBAR_BAR_HEIGHT 44.0f
+#define AD_NAVIGATION_BAR_HEIGHT 44.0f
+#define AD_TOOLBAR_HEIGHT 44.0f
 #define AD_Z_DISTANCE 1000.0f
 
 @interface ADTransitionController (Private)
@@ -102,7 +102,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     self.view.layer.sublayerTransform = sublayerTransform;
     
     // Create and add the container view that will hold the controller views
-    _containerView = [[ADTransitionView alloc] initWithFrame:CGRectZero];
+    _containerView = [[ADTransitionView alloc] initWithFrame:CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + navigationBarHeight, self.view.frame.size.width, self.view.frame.size.height - navigationBarHeight - toolbarHeight)];
     _containerView.autoresizesSubviews = YES;
     _containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:_containerView];
@@ -146,6 +146,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     }
     [_navigationBar setItems:items];
     [items release];
+
+    [_toolbar setItems:[[self.viewControllers lastObject] toolbarItems]];
 }
 
 - (UIViewController *)topViewController {
@@ -334,6 +336,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     }
     navigationItem.hidesBackButton = (_viewControllers.count == 0); // Hide the "Back" button for the root view controller
     [_navigationBar pushNavigationItem:navigationItem animated:animated];
+    [_toolbar setItems:viewController.toolbarItems animated:animated];
     
     if (!animated) { // Call the delegate method if no animation
         [self pushTransitionDidFinish:nil];
@@ -382,6 +385,7 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     _isNavigationBarTransitioning = animated;
     _shoudPopItem = YES;
     [_navigationBar popNavigationItemAnimated:animated];
+    [_toolbar setItems:inViewController.toolbarItems animated:animated];
     
     _isContainerViewTransitioning = animated;
     transition.delegate = self;
@@ -566,6 +570,36 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
         self.navigationBar.frame = frame;
         return position;
     }
+}
+
+#pragma mark -
+#pragma mark UIToolbar
+
+- (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated {
+    CGFloat toolbarHeight = _toolbar.frame.size.height;
+    if (animated) {
+        [UIView beginAnimations:nil context:NULL];
+    }
+    CGRect frame = _containerView.frame;
+    if ([self isToolbarHidden] && !hidden) {
+        _toolbar.alpha = 1.0f;
+        frame.size.height = _containerView.frame.size.height - toolbarHeight;
+    } else if (![self isToolbarHidden] && hidden) {
+        _toolbar.alpha = 0.0f;
+        frame.size.height = _containerView.frame.size.height + toolbarHeight;
+    }
+    _containerView.frame = frame;
+    if (animated) {
+        [UIView commitAnimations];
+    }
+}
+
+- (void)setToolbarHidden:(BOOL)hidden {
+    [self setToolbarHidden:hidden animated:NO];
+}
+
+- (BOOL)isToolbarHidden {
+    return _toolbar.alpha < 0.5f;
 }
 
 @end

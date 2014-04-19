@@ -54,6 +54,12 @@
     reversedTransition.outAnimation.speed = -1.0 * reversedTransition.outAnimation.speed;
     [outAnimationCopy release];
     [inAnimationCopy release];
+    reversedTransition.type = ADTransitionTypeNull;
+    if (self.type == ADTransitionTypePush) {
+        reversedTransition.type = ADTransitionTypePop;
+    } else if (self.type == ADTransitionTypePop) {
+        reversedTransition.type = ADTransitionTypePush;
+    }
     return [reversedTransition autorelease];
 }
 
@@ -65,6 +71,10 @@
     [super startTransitionFromView:viewOut toView:viewIn inside:viewContainer];
     [viewIn.layer addAnimation:self.inAnimation forKey:kAdKey];
     [viewOut.layer addAnimation:self.outAnimation forKey:kAdKey];
+}
+
+- (NSTimeInterval)duration {
+    return MAX(self.inAnimation.duration, self.outAnimation.duration);
 }
 
 #pragma mark -
