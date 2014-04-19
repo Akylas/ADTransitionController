@@ -9,19 +9,12 @@
 #import "ADTransitioningDelegate.h"
 #import "ADTransitionController.h"
 
-#define AD_Z_DISTANCE 1000.0f
+#define AD_Z_DISTANCE 500.0f
 
 @interface ADTransitioningDelegate () {
     id<UIViewControllerContextTransitioning> _currentTransitioningContext;
 }
 
-@end
-
-@interface ADTransitioningDelegate (Private)
-- (void)_setupLayers:(NSArray *)layers;
-- (void)_teardownLayers:(NSArray *)layers;
-- (void)_completeTransition;
-- (void)_transitionInContainerView:(UIView *)containerView fromView:(UIView *)viewOut toView:(UIView *)viewIn withTransition:(ADTransition *)transition;
 @end
 
 @implementation ADTransitioningDelegate
@@ -36,140 +29,94 @@
     self = [self init];
     if (self) {
         _transition = [transition retain];
-        _transition.delegate = self;
     }
     return self;
 }
 
-#pragma mark - ADTransitionDelegate
-- (void)pushTransitionDidFinish:(ADTransition *)transition {
-    [self _completeTransition];
-}
-
-- (void)popTransitionDidFinish:(ADTransition *)transition {
-    [self _completeTransition];
-}
-
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    return self;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    return self;
-}
-
-#pragma mark - UIViewControllerAnimatedTransitioning
-
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
-    [_currentTransitioningContext release], _currentTransitioningContext = [transitionContext retain];
+    NSLog(@"animateTransition");
+    self.transitionContext = transitionContext;
     UIViewController * fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController * toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-
+    
     if (self.transition.type == ADTransitionTypeNull) {
         self.transition.type = ADTransitionTypePush;
     }
-
     UIView * containerView = transitionContext.containerView;
     UIView * fromView = fromViewController.view;
     UIView * toView = toViewController.view;
-
-    CATransform3D sublayerTransform = CATransform3DIdentity;
-    sublayerTransform.m34 = 1.0 / -AD_Z_DISTANCE;
-    containerView.layer.sublayerTransform = sublayerTransform;
-
-    UIView * wrapperView = [[ADTransitionView alloc] initWithFrame:fromView.frame];
-    fromView.frame = fromView.bounds;
-    toView.frame = toView.bounds;
-
-    wrapperView.autoresizesSubviews = YES;
-    wrapperView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    [wrapperView addSubview:fromView];
-    [wrapperView addSubview:toView];
-    [containerView addSubview:wrapperView];
-    [wrapperView release];
-
+    
+    BOOL needsTransformFix = ([self.transition needsPerspective]) && ![containerView.layer isKindOfClass:[CATransformLayer class]];
+    UIView* workingView = containerView;
+    
+    if (needsTransformFix) {
+        if (![[[containerView subviews] firstObject] isKindOfClass:[ADTransitionView class]]) {
+            float zDistance = AD_Z_DISTANCE;
+            CATransform3D sublayerTransform = CATransform3DIdentity;
+            sublayerTransform.m34 = 1.0 / -zDistance;
+            containerView.layer.sublayerTransform = sublayerTransform;
+            workingView = [[ADTransitionView alloc] initWithFrame: containerView.bounds];
+            workingView.autoresizesSubviews = YES;
+            workingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+            [containerView addSubview:workingView];
+        }
+        else {
+            workingView = [[containerView subviews] firstObject];
+        }
+    }
+    fromView.frame = [transitionContext initialFrameForViewController:fromViewController];
+    toView.frame = [transitionContext finalFrameForViewController:toViewController];
+    [workingView addSubview:fromView]; //not needed if not using ADTransitionView
+    [workingView addSubview:toView];
+    
     ADTransition * transition = nil;
     switch (self.transition.type) {
         case ADTransitionTypePush:
             transition = self.transition;
             break;
         case ADTransitionTypePop:
-            transition = self.transition.reverseTransition;
+            transition = [self.transition reverseTransitionForSourceRect:containerView.bounds];
             transition.type = ADTransitionTypePop;
         default:
             break;
     }
-    transition.delegate = self;
-    [self _transitionInContainerView:wrapperView fromView:fromView toView:toView withTransition:transition];
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:[self transitionDuration:transitionContext]];
+    [transition prepareTransitionFromView:fromView toView:toView inside:workingView];
+    [CATransaction setCompletionBlock:^{
+        [self _completeTransition:transition];
+    }];
+    
+    [transition startTransitionFromView:fromView toView:toView inside:workingView];
+    
+    [CATransaction commit];
 }
 
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     return self.transition.duration;
 }
-@end
 
-@implementation ADTransitioningDelegate (Private)
-- (void)_transitionInContainerView:(UIView *)containerView fromView:(UIView *)viewOut toView:(UIView *)viewIn withTransition:(ADTransition *)transition {
-    viewIn.layer.doubleSided = NO;
-    viewOut.layer.doubleSided = NO;
-
-    [self _setupLayers:@[viewIn.layer, viewOut.layer]];
-    [CATransaction setCompletionBlock:^{
-        [self _teardownLayers:@[viewIn.layer, viewOut.layer]];
-        viewIn.layer.transform = CATransform3DIdentity;
-        viewOut.layer.transform = CATransform3DIdentity;
-        containerView.layer.transform = CATransform3DIdentity;
-
-        UIView * contextView = [_currentTransitioningContext containerView];
-        viewOut.frame = containerView.frame;
-        [contextView addSubview:viewOut];
-        viewIn.frame = containerView.frame;
-        [contextView addSubview:viewIn];
-        [containerView removeFromSuperview];
-    }];
-
-    if ([transition isKindOfClass:[ADTransformTransition class]]) { // ADTransformTransition
-        ADTransformTransition * transformTransition = (ADTransformTransition *)transition;
-        viewIn.layer.transform = transformTransition.inLayerTransform;
-        viewOut.layer.transform = transformTransition.outLayerTransform;
-
-        // We now balance viewIn.layer.transform by taking its invert and putting it in the superlayer of viewIn.layer
-        // so that viewIn.layer appears ok in the final state.
-        // (When pushing, viewIn.layer.transform == CATransform3DIdentity)
-        containerView.layer.transform = CATransform3DInvert(viewIn.layer.transform);
-
-        [containerView.layer addAnimation:transformTransition.animation forKey:nil];
-    } else if ([transition isKindOfClass:[ADDualTransition class]]) { // ADDualTransition
-        ADDualTransition * dualTransition = (ADDualTransition *)transition;
-        [viewIn.layer addAnimation:dualTransition.inAnimation forKey:nil];
-        [viewOut.layer addAnimation:dualTransition.outAnimation forKey:nil];
-    } else if (transition != nil) {
-        NSAssert(FALSE, @"Unhandled ADTransition subclass!");
+- (void)_completeTransition:(ADTransition *)transition {
+    id<UIViewControllerContextTransitioning> transitionContext = [self transitionContext];
+    UIViewController * from = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController * to = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    UIView * contextView = [transitionContext containerView];
+    UIView * workingView = contextView;
+    if ([[[contextView subviews] firstObject] isKindOfClass:[ADTransitionView class]]) {
+        workingView = [[contextView subviews] firstObject];
     }
-}
-
-- (void)_setupLayers:(NSArray *)layers {
-    for (CALayer * layer in layers) {
-        layer.shouldRasterize = YES;
-        layer.rasterizationScale = [UIScreen mainScreen].scale;
+    
+    BOOL cancelled = [transitionContext transitionWasCancelled];
+    if (cancelled) {
+        [contextView addSubview:from.view];
+        [to.view removeFromSuperview];
+    } else {
+        [contextView addSubview:to.view];
+        [from.view removeFromSuperview];
     }
-}
-
-- (void)_teardownLayers:(NSArray *)layers {
-    for (CALayer * layer in layers) {
-        layer.shouldRasterize = NO;
-    }
-}
-
-- (void)_completeTransition {
-    UIView * containerView = _currentTransitioningContext.containerView;
-    CATransform3D sublayerTransform = CATransform3DIdentity;
-    containerView.layer.sublayerTransform = sublayerTransform;
-
-    [_currentTransitioningContext completeTransition:YES];
-    [_currentTransitioningContext release], _currentTransitioningContext = nil;
+    
+    [transition finishedTransitionFromView:from.view toView:to.view inside:workingView];
+    [transitionContext completeTransition:!cancelled];
 }
 
 @end

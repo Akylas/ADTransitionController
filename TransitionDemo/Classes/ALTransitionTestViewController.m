@@ -39,8 +39,8 @@
     
     UIColor * color = nil;
     switch (_index % 4) {
-        case 0: // Green
-            color = [UIColor colorWithRed:0.196 green:0.651 blue:0.573 alpha:1.000];
+        case 0: // White
+            color = [UIColor colorWithRed:1 green:1 blue:1 alpha:1.000];
             break;
         case 1: // Orange
             color = [UIColor colorWithRed:1.000 green:0.569 blue:0.349 alpha:1.000];
@@ -426,7 +426,7 @@
 
 - (void)_defaultsSettings {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setValue:@(0.5f) forKey:AL_SPEED_KEY];
+    [defaults setValue:@(1.5f) forKey:AL_SPEED_KEY];
     [defaults setValue:@NO forKey:AL_NAVIGATION_BAR_HIDDEN_KEY];
     [defaults setValue:@YES forKey:AL_TOOLBAR_HIDDEN_KEY];
     [defaults setValue:@(ADTransitionRightToLeft) forKey:AL_ORIENTATION_KEY];

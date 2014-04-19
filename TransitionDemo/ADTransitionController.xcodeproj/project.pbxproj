@@ -73,6 +73,7 @@
 		6FB67DBE18058562009F27B1 /* ADTransitioningDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DBD18058562009F27B1 /* ADTransitioningDelegate.m */; };
 		6FB67DC118059126009F27B1 /* ADNavigationControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DC018059126009F27B1 /* ADNavigationControllerDelegate.m */; };
 		6FB67DC41806B3FF009F27B1 /* ADTransitioningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FB67DC31806B3FF009F27B1 /* ADTransitioningViewController.m */; };
+		D512A798187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.m in Sources */ = {isa = PBXBuildFile; fileRef = D512A797187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -174,6 +175,8 @@
 		6FB67DC018059126009F27B1 /* ADNavigationControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNavigationControllerDelegate.m; sourceTree = "<group>"; };
 		6FB67DC21806B3FF009F27B1 /* ADTransitioningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADTransitioningViewController.h; sourceTree = "<group>"; };
 		6FB67DC31806B3FF009F27B1 /* ADTransitioningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADTransitioningViewController.m; sourceTree = "<group>"; };
+		D512A796187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CAMediaTimingFunction+AdditionalEquations.h"; sourceTree = "<group>"; };
+		D512A797187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CAMediaTimingFunction+AdditionalEquations.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +197,8 @@
 		490A85E3175DED910085D3D8 /* ADTransitionController */ = {
 			isa = PBXGroup;
 			children = (
+				D512A796187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.h */,
+				D512A797187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.m */,
 				490A8608175DED910085D3D8 /* ADTransitionController.h */,
 				490A8609175DED910085D3D8 /* ADTransitionController.m */,
 				490A8606175DED910085D3D8 /* ADTransition.h */,
@@ -488,6 +493,7 @@
 				490A860F175DED910085D3D8 /* ADCarrouselTransition.m in Sources */,
 				490A8610175DED910085D3D8 /* ADCrossTransition.m in Sources */,
 				490A8611175DED910085D3D8 /* ADCubeTransition.m in Sources */,
+				D512A798187EFEBB004E3AB1 /* CAMediaTimingFunction+AdditionalEquations.m in Sources */,
 				490A8612175DED910085D3D8 /* ADDualTransition.m in Sources */,
 				490A8613175DED910085D3D8 /* ADFadeTransition.m in Sources */,
 				490A8614175DED910085D3D8 /* ADFlipTransition.m in Sources */,

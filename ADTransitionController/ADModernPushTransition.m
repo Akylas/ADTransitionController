@@ -9,6 +9,8 @@
 #import "ADModernPushTransition.h"
 #import "CAMediaTimingFunction+AdditionalEquations.h"
 
+#define outScale -0.3f
+
 @interface ADModernPushTransition()
 {
     UIView* fadeView;
@@ -26,61 +28,65 @@
     }
 }
 
-- (id)initWithDuration:(CFTimeInterval)duration orientation:(ADTransitionOrientation)orientation sourceRect:(CGRect)sourceRect {
-    self.orientation = orientation;
+- (id)initWithDuration:(CFTimeInterval)duration orientation:(ADTransitionOrientation)orientation sourceRect:(CGRect)sourceRect reversed:(BOOL)reversed {
     const CGFloat viewWidth = sourceRect.size.width;
     const CGFloat viewHeight = sourceRect.size.height;
-
-    CABasicAnimation * inSwipeAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-    inSwipeAnimation.timingFunction = [CAMediaTimingFunction easeOutExpo];
-    inSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
-    switch (orientation) {
+    
+    CABasicAnimation * inAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    inAnimation.timingFunction = [CAMediaTimingFunction functionWithControlPoints:0.1: 0.7: 0.1: 1];
+    inAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+    
+    CABasicAnimation * outSwipeAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    outSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+    
+    ADTransitionOrientation rOrient = reversed?[ADTransition reversedOrientation:orientation]:orientation;
+    switch (rOrient) {
         case ADTransitionRightToLeft:
         {
-            inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(viewWidth, 0.0f, 0.0f)];
+            inAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(viewWidth, 0.0f, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(outScale*viewWidth, 0.0f, 0.0f)];
         }
             break;
         case ADTransitionLeftToRight:
         {
-            inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(- viewWidth, 0.0f, 0.0f)];
+            inAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(- viewWidth, 0.0f, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(- outScale*viewWidth, 0.0f, 0.0f)];
         }
             break;
         case ADTransitionTopToBottom:
         {
-            inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, - viewHeight, 0.0f)];
+            inAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, - viewHeight, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, - outScale*viewHeight, 0.0f)];
         }
             break;
         case ADTransitionBottomToTop:
         {
-            inSwipeAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, viewHeight, 0.0f)];
+            inAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, viewHeight, 0.0f)];
+            outSwipeAnimation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(0.0f, outScale*viewHeight, 0.0f)];
         }
             break;
         default:
             NSAssert(FALSE, @"Unhandled ADTransitionOrientation");
             break;
     }
-    inSwipeAnimation.duration = duration;
-
+    inAnimation.duration = duration;
+    outSwipeAnimation.duration = duration;
+    
     CABasicAnimation * outPositionAnimation = [CABasicAnimation animationWithKeyPath:@"zPosition"];
     outPositionAnimation.fromValue = @-0.001;
     outPositionAnimation.toValue = @-0.001;
     outPositionAnimation.duration = duration;
-
+    
+    //    CABasicAnimation * outOpacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    //    outOpacityAnimation.fromValue = @1.0f;
+    //    outOpacityAnimation.toValue = @0.9f;
+    //    outOpacityAnimation.duration = duration;
+    
     CAAnimationGroup * outAnimation = [CAAnimationGroup animation];
-    [outAnimation setAnimations:@[outPositionAnimation]];
+    [outAnimation setAnimations:@[outSwipeAnimation, outPositionAnimation]];
     outAnimation.duration = duration;
     
-    
-
-    self = [super initWithInAnimation:inSwipeAnimation andOutAnimation:outAnimation];
-    return self;
-}
-
-- (ADTransition *)reverseTransition {
-    ADDualTransition *reverse = (ADDualTransition*)[super reverseTransition];
-    reverse.outAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAAnimationLinear];
-    reverse.outAnimation.duration = reverse.outAnimation.duration/2;
-    return reverse;
+    return [super initWithInAnimation:inAnimation andOutAnimation:outAnimation orientation:orientation reversed:reversed];
 }
 
 -(void)prepareTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer
@@ -92,13 +98,19 @@
     }
     if (self.isReversed) {
         if (viewIn) {
-            fadeView.frame = viewIn.bounds;
+            fadeView.frame = viewContainer.bounds;
             [viewIn addSubview:fadeView];
+            //            [viewContainer sendSubviewToBack:viewIn];
+        }
+        if (viewOut) {
+            //            [viewContainer bringSubviewToFront:viewOut];
         }
         
     }
     else if (viewOut){
-        fadeView.frame = viewOut.bounds;
+        CGRect bounds =viewContainer.bounds;
+        fadeView.frame = bounds;
+        //        fadeView.layer.opacity= 0.0f;
         [viewOut addSubview:fadeView];
     }
 }
@@ -111,26 +123,11 @@
 
 -(void)startTransitionFromView:(UIView *)viewOut toView:(UIView *)viewIn inside:(UIView *)viewContainer {
     [super startTransitionFromView:viewOut toView:viewIn inside:viewContainer];
-    CABasicAnimation* fadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
     CGFloat finalValue = 0.2f;
-    if (self.isReversed) {
-        fadeAnimation.fromValue = [NSNumber numberWithFloat:finalValue];
-        fadeAnimation.toValue = @0.0f;
-    }
-    else {
-        fadeAnimation.fromValue = @0.0f;
-        fadeAnimation.toValue = [NSNumber numberWithFloat:finalValue];
-    }
-    fadeAnimation.duration = _outAnimation.duration;
-    fadeAnimation.fillMode = kCAFillModeBoth;
-    
-    [fadeView.layer addAnimation:fadeAnimation forKey:@"opacity"];
-    if (self.isReversed) {
-        fadeView.layer.opacity= 0.0f;
-    }
-    else {
-        fadeView.layer.opacity= finalValue;
-    }
+    fadeView.alpha = self.isReversed?finalValue:0.0f;
+    [UIView animateWithDuration:self.duration animations:^{
+        fadeView.alpha = self.isReversed?0.0f:finalValue;
+    }];
 }
 
 @end
