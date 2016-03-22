@@ -40,14 +40,20 @@
             if ([toVC.transitioningDelegate isKindOfClass:[ADTransitioningDelegate class]]) {
                 self.currentTransition = (ADTransitioningDelegate *)toVC.transitioningDelegate;
                 self.currentTransition.transition.type = ADTransitionTypePush;
-                break;
             }
+            else {
+                self.currentTransition = nil;
+            }
+            break;
         case UINavigationControllerOperationPop:
             if ([fromVC.transitioningDelegate isKindOfClass:[ADTransitioningDelegate class]]){
                 self.currentTransition = (ADTransitioningDelegate *)fromVC.transitioningDelegate;
                 self.currentTransition.transition.type = ADTransitionTypePop;
-                break;
             }
+            else {
+                self.currentTransition = nil;
+            }
+            break;
         case UINavigationControllerOperationNone:
         default:
             self.currentTransition = nil;
@@ -100,19 +106,25 @@
                 [self.currentTransition finishInteractiveTransition];
             } else {
                 [self.currentTransition cancelInteractiveTransition];
+//                [self performSelector:@selector(resetIsInteractive)
+//                           withObject: nil
+//                           afterDelay:0.01];
+
             }
-            self.isInteracting = NO;
             break;
             
         case UIGestureRecognizerStateCancelled:
             [self.currentTransition cancelInteractiveTransition];
-            self.isInteracting = NO;
             break;
             
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStatePossible:
             break;
     }
+}
+
+-(void)resetIsInteractive {
+    self.isInteracting = NO;
 }
 
 #pragma mark - UINavigationController swipe configuration
@@ -147,6 +159,7 @@
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
+    self.isInteracting = NO;
     if (_delegate) {
         [_delegate navigationController:navigationController didShowViewController:viewController animated:animated];
     }
