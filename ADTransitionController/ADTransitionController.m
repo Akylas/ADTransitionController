@@ -76,6 +76,8 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
         _currentTransition.delegate = nil;
         [_currentTransition release], _currentTransition = nil;
     }
+    [_topViewController release], _topViewController = nil;
+    [_visibleViewController release], _visibleViewController = nil;
     [super dealloc];
 }
 

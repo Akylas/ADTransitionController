@@ -21,11 +21,12 @@
 
 -(void) dealloc
 {
-    [super dealloc];
     if (fadeView) {
         [fadeView release];
         fadeView = nil;
     }
+    [super dealloc];
+    
 }
 
 - (id)initWithDuration:(CFTimeInterval)duration orientation:(ADTransitionOrientation)orientation sourceRect:(CGRect)sourceRect reversed:(BOOL)reversed {

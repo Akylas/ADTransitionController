@@ -24,6 +24,8 @@
 
 - (void)dealloc {
     [_customTransitioningDelegate release], _customTransitioningDelegate = nil;
+    [_transition release], _transition = nil;
+    
     [super dealloc];
 }
 

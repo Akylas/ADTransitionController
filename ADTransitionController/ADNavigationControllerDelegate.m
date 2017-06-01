@@ -18,6 +18,12 @@
 
 @implementation ADNavigationControllerDelegate
 
+- (void)dealloc
+{
+    [_delegate release];
+    [super dealloc];
+}
+
 - (void)manageNavigationController:(UINavigationController *)navigationController
 {
     navigationController.delegate = self;
