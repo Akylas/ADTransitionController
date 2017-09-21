@@ -683,6 +683,34 @@ NSString * ADTransitionControllerAssociationKey = @"ADTransitionControllerAssoci
     [self.viewControllers.lastObject didRotateFromInterfaceOrientation:fromInterfaceOrientation ];
 }
 
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self.viewControllers.lastObject viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self updateLayout];
+    [self updateLayoutForController:self.viewControllers.lastObject];
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    [self.viewControllers.lastObject willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container
+{
+    [super systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+    [self.viewControllers.lastObject systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container
+{
+    [super preferredContentSizeDidChangeForChildContentContainer:container];
+    [self.viewControllers.lastObject preferredContentSizeDidChangeForChildContentContainer:container];
+}
+
+
 #pragma mark - iOS 7 Status Bar Helpers
 -(UIViewController*)childViewControllerForStatusBarStyle{
     return self.viewControllers.lastObject;
