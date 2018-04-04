@@ -22,6 +22,8 @@ NSString * ADTransitionAnimationOutValue = @"ADTransitionAnimationOutValue";
 - (id)init {
     if (self = [super init]) {
         self.isReversed = NO;
+        self.onlyForPop = NO;
+        self.onlyForPush = NO;
     }
     return self;
 }

@@ -10,7 +10,7 @@
 #import "ADTransitioningDelegate.h"
 #import "ADModernPushTransition.h"
 
-#define AD_SYSTEM_VERSION_GREATER_THAN_7 ([[[UIDevice currentDevice] systemVersion] compare:@"7" options:NSNumericSearch] == NSOrderedDescending)
+//#define AD_SYSTEM_VERSION_GREATER_THAN_7 ([[[UIDevice currentDevice] systemVersion] compare:@"7" options:NSNumericSearch] == NSOrderedDescending)
 
 
 @interface ADTransitioningViewController () {
@@ -23,8 +23,10 @@
 @synthesize transition = _transition;
 
 - (void)dealloc {
-    [_customTransitioningDelegate release], _customTransitioningDelegate = nil;
-    [_transition release], _transition = nil;
+    [_customTransitioningDelegate release];
+    _customTransitioningDelegate = nil;
+    [_transition release];
+    _transition = nil;
     
     [super dealloc];
 }
@@ -39,7 +41,7 @@
     [_customTransitioningDelegate release];
     _customTransitioningDelegate = nil;
     _transition = [transition retain];
-    if ((!AD_SYSTEM_VERSION_GREATER_THAN_7 || ![transition isKindOfClass:[ADModernPushTransition class]])) {
+    if (![transition isKindOfClass:[ADModernPushTransition class]]) {
         _customTransitioningDelegate = [[ADTransitioningDelegate alloc] initWithTransition:transition];
         [super setTransitioningDelegate:(id <UIViewControllerTransitioningDelegate>)_customTransitioningDelegate]; // don't call the setter of the current class
     }

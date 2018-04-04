@@ -38,37 +38,51 @@
 
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
+    if (_delegate) {
+        id result = [_delegate navigationController:navigationController animationControllerForOperation:operation fromViewController:fromVC toViewController:toVC];
+        if (result) {
+          return result;
+        }
+    }
+  
     BOOL shouldAddGestureRecognizers = NO;
+  id<UIViewControllerAnimatedTransitioning> result = self.currentTransition;
     
     switch (operation) {
         case UINavigationControllerOperationPush:
             shouldAddGestureRecognizers = _isInteractive;
             if ([toVC.transitioningDelegate isKindOfClass:[ADTransitioningDelegate class]]) {
-                self.currentTransition = (ADTransitioningDelegate *)toVC.transitioningDelegate;
+                result = self.currentTransition = (ADTransitioningDelegate *)toVC.transitioningDelegate;
                 self.currentTransition.transition.type = ADTransitionTypePush;
+                if (self.currentTransition.transition.onlyForPop) {
+                  result = nil;
+                }
             }
             else {
-                self.currentTransition = nil;
+                result = self.currentTransition = nil;
             }
             break;
         case UINavigationControllerOperationPop:
             if ([fromVC.transitioningDelegate isKindOfClass:[ADTransitioningDelegate class]]){
-                self.currentTransition = (ADTransitioningDelegate *)fromVC.transitioningDelegate;
+                result = self.currentTransition = (ADTransitioningDelegate *)fromVC.transitioningDelegate;
                 self.currentTransition.transition.type = ADTransitionTypePop;
+                if (self.currentTransition.transition.onlyForPush) {
+                  result = nil;
+                }
             }
             else {
-                self.currentTransition = nil;
+              result = self.currentTransition = nil;
             }
             break;
         case UINavigationControllerOperationNone:
         default:
-            self.currentTransition = nil;
+          result = self.currentTransition = nil;
     }
     if (shouldAddGestureRecognizers) {
         [toVC.view addGestureRecognizer:[self panGestureRecognizerForLeftEdgeOfViewController:toVC]];
     }
 
-    return self.currentTransition;
+    return result;
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController
@@ -150,10 +164,10 @@
     }
     
     if (gestureRecognizer == navigationController.interactivePopGestureRecognizer) {
-        return self.currentTransition == nil;
+        return self.currentTransition == nil || self.currentTransition.transition.onlyForPush;
     }
     
-    return self.currentTransition != nil;
+    return self.currentTransition != nil && !self.currentTransition.transition.onlyForPush;
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated

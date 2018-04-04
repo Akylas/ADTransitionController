@@ -49,6 +49,8 @@ typedef enum {
 @property (nonatomic, assign) ADTransitionType type;
 @property (nonatomic, assign) ADTransitionOrientation orientation;
 @property (nonatomic, assign) BOOL isReversed;
+@property (nonatomic, assign) BOOL onlyForPush;
+@property (nonatomic, assign) BOOL onlyForPop;
 @property (nonatomic, readonly) NSTimeInterval duration; // abstract
 
 + (ADTransition *)nullTransition;

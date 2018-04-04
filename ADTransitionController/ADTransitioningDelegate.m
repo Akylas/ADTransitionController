@@ -21,7 +21,8 @@
 @synthesize transition = _transition;
 
 - (void)dealloc {
-    [_transition release], _transition = nil;
+    [_transition release];
+    _transition = nil;
     [super dealloc];
 }
 
